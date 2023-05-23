@@ -1,0 +1,67 @@
+﻿@model List<SMS.Infrastructure.DTOs.UserRolesViewModels>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>User Roles</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th hidden>Id</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td hidden>@user.UserId</td>
+                <td>@user.Email</td>
+                <td>@string.Join(" , ", user.Roles.ToList())</td>
+                <td>
+                    <a asp-action="Edit" asp-route-UserId="@user.UserId"><i style="font-size:20px" class="fa">&#xf044;</i></a> |
+                    <a id="deleteUser"><i class="fa fa-trash"></i></a>
+                    <a class="btn btn-primary" asp-controller="UserRole" asp-action="Manage" asp-route-Id="@user.UserId">Manage Roles</a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        </button>
+                        <div class="dropdown-menu shadow animated--grow-in">
+                            <a style='margin-right:16px' asp-controller="RolePermission" asp-action="Index" asp-route-userId="@user.UserId" class="dropdown-item">
+                                <i class="fas fa-wrench"></i> Manage Permissions
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function(){
+        $(document).on('click','#deleteUser',function(){
+            var Row = $(this).closest('tr');
+            var Id = $(Row).find('td').eq(0).html();
+            var result = confirm("Are you sure you want to delete?");
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: '/UserRole/DeleteConfirmed',
+                    data: { "id": Id },
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        location.reload();
+                    },
+                    error: function (errormsg) {
+                        prompt("", JSON.stringify(errormsg))
+                    }
+                });
+            }
+        });
+    }); 
+</script>
+

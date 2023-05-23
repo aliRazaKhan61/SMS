@@ -1,0 +1,63 @@
+﻿@model IEnumerable<SMS.Infrastructure.Models.ProductDetail>
+@using SMS.Infrastructure.DTOs
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@if ((AuthorizationService.AuthorizeAsync(User, Permissions.ProductsDetail.Create)).Result.Succeeded)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductStock)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductPrice)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductStock)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductPrice)
+                </td>
+                <td>
+                    @if ((AuthorizationService.AuthorizeAsync(User, Permissions.ProductsDetail.Edit)).Result.Succeeded)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    }|
+                    @if ((AuthorizationService.AuthorizeAsync(User, Permissions.ProductsDetail.Detail)).Result.Succeeded)
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    }
+                    |
+                    @if ((AuthorizationService.AuthorizeAsync(User, Permissions.ProductsDetail.Delete)).Result.Succeeded)
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
